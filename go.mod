@@ -1,4 +1,4 @@
-module github.com/invzhi/caddy-docker-upstreams
+module github.com/v4violet/caddy-docker-upstreams
 
 go 1.21.0
 
