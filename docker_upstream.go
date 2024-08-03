@@ -192,7 +192,7 @@ func (du *DockerUpstreams) Provision(ctx caddy.Context) error {
 	if err != nil {
 		return fmt.Errorf("ping docker server: %w", err)
 	}
-	du.logger.Info("connected docker server", zap.String("api_version", ping.APIVersion))
+	du.logger.Info("connected docker server", zap.String("api_version", ping.APIVersion), zap.String("label", du.Label))
 
 	return du.provision(ctx, cli)
 }
