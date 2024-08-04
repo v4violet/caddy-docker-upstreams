@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	LabelLabel        = "caddy.label"
+	Label             = "caddy"
 	LabelNetwork      = "caddy.network"
 	LabelUpstreamPort = "caddy.port"
 )
@@ -187,7 +187,7 @@ func (du *DockerUpstreams) Provision(ctx caddy.Context) error {
 	du.upstreamsMu = new(sync.RWMutex)
 
 	du.filters = filters.NewArgs(
-		filters.Arg("label", fmt.Sprintf("%s=%s", LabelLabel, du.Label)),
+		filters.Arg("label", fmt.Sprintf("%s=%s", Label, du.Label)),
 		filters.Arg("status", "running"), // types.ContainerState.Status
 		filters.Arg("health", types.Healthy),
 		filters.Arg("health", types.NoHealthcheck),
