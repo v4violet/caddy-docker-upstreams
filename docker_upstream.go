@@ -74,7 +74,7 @@ func (du *DockerUpstreams) provisionCandidates(ctx caddy.Context, cli *client.Cl
 				)
 				continue
 			}
-			port = string(tcp_ports[0].PrivatePort)
+			port = fmt.Sprintf("%d", tcp_ports[0].PrivatePort)
 		}
 
 		// Choose network to connect.
