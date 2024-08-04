@@ -58,16 +58,16 @@ func (du *DockerUpstreams) provisionCandidates(ctx caddy.Context, cli *client.Cl
 	updated := make([]*reverseproxy.Upstream, 0, len(containers))
 
 	for _, c := range containers {
-		tcp_ports := []types.Port{}
-		for _, port := range c.Ports {
-			if port.Type != "tcp" {
-				continue
-			}
-			tcp_ports = append(tcp_ports, port)
-		}
 		// Build upstream.
 		port, ok := c.Labels[LabelUpstreamPort]
 		if !ok {
+			tcp_ports := []types.Port{}
+			for _, port := range c.Ports {
+				if port.Type != "tcp" {
+					continue
+				}
+				tcp_ports = append(tcp_ports, port)
+			}
 			if len(tcp_ports) == 0 {
 				du.logger.Error("unable to get port for container",
 					zap.String("container_id", c.ID),
