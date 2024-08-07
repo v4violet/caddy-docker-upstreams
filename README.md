@@ -48,6 +48,28 @@ This module requires the Docker Labels to provide the necessary information.
 | `caddy.network` | optional but suggested if your container is attached to multiple networks, specify the docker network which caddy connecting through (if it is empty, the first network of container will be specified) |
 | `caddy.port`    | optional unless the plugin cant auto detect the port                                                                                                                                                    |
 
+## Example
+
+```yaml
+# docker-compose.yaml
+services:
+  whoami:
+    image: traefik/whoami:latest
+    restart: always
+    labels:
+      - caddy=whoami
+      - caddy.port=80
+```
+
+```caddy
+# Caddyfile
+whoami.example.com {
+  reverse_proxy {
+    dyanmic docker "whoami"
+  }
+}
+```
+
 ## Docker Client
 
 Environment variables could configure the docker client:
