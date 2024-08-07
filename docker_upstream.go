@@ -218,7 +218,7 @@ func (du *DockerUpstreams) GetUpstreams(r *http.Request) ([]*reverseproxy.Upstre
 }
 
 func (du *DockerUpstreams) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
-	d.NextArg()
+	d.Next() // consume upstream name
 	if d.NextArg() {
 		du.Label = d.Val()
 	} else {
