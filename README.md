@@ -2,11 +2,13 @@
 
 This package implements a docker dynamic upstreams module for Caddy.
 
+This is a fork which puts more emphasis on using the Caddyfile for routing instead of container labels.
+
 Requires Caddy 2+.
 
 ## Installation
 
-Download from [official website](https://caddyserver.com/download?package=github.com%2Finvzhi%2Fcaddy-docker-upstreams)
+Download from [official website](https://caddyserver.com/download?package=github.com%2Fv4violet%2Fcaddy-docker-upstreams)
 or build yourself using [xcaddy](https://github.com/caddyserver/xcaddy).
 
 Here is a Dockerfile example.
@@ -15,7 +17,7 @@ Here is a Dockerfile example.
 FROM caddy:<version>-builder AS builder
 
 RUN xcaddy build \
-    --with github.com/invzhi/caddy-docker-upstreams
+    --with github.com/v4violet/caddy-docker-upstreams
 
 FROM caddy:<version>
 
@@ -24,15 +26,15 @@ COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
 ## Caddyfile Syntax
 
-List all your domain or use [On-Demand TLS](https://caddyserver.com/docs/automatic-https#on-demand-tls).
+```caddy
+example.com {
+  reverse_proxy /api/* {
+    dynamic docker "api"
+  }
 
-```
-app1.example.com,
-app2.example.com,
-app3.example.com {
-    reverse_proxy {
-        dynamic docker
-    }
+  reverse_proxy {
+    dynamic docker "frontend"
+  }
 }
 ```
 
@@ -40,38 +42,11 @@ app3.example.com {
 
 This module requires the Docker Labels to provide the necessary information.
 
-| Label                                | Description                                                                                                                            |
-|--------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
-| `com.caddyserver.http.enable`        | required, should be `true`                                                                                                             |
-| `com.caddyserver.http.network`       | optional, specify the docker network which caddy connecting through (if it is empty, the first network of container will be specified) |
-| `com.caddyserver.http.upstream.port` | required, specify the port                                                                                                             |
-
-As well as the labels corresponding to the matcher.
-
-| Label                                      | Matcher                                                                  |
-|--------------------------------------------|--------------------------------------------------------------------------|
-| `com.caddyserver.http.matchers.protocol`   | [protocol](https://caddyserver.com/docs/caddyfile/matchers#protocol)     |
-| `com.caddyserver.http.matchers.host`       | [host](https://caddyserver.com/docs/caddyfile/matchers#host)             |
-| `com.caddyserver.http.matchers.method`     | [method](https://caddyserver.com/docs/caddyfile/matchers#method)         |
-| `com.caddyserver.http.matchers.path`       | [path](https://caddyserver.com/docs/caddyfile/matchers#path)             |
-| `com.caddyserver.http.matchers.query`      | [query](https://caddyserver.com/docs/caddyfile/matchers#query)           |
-| `com.caddyserver.http.matchers.expression` | [expression](https://caddyserver.com/docs/caddyfile/matchers#expression) |
-
-Here is a docker-compose.yml example with [vaultwarden](https://github.com/dani-garcia/vaultwarden).
-
-```yaml
-vaultwarden:
-  image: vaultwarden/server:${VAULTWARDEN_VERSION:-latest}
-  restart: unless-stopped
-  volumes:
-    - ${VAULTWARDEN_ROOT}:/data
-  labels:
-    com.caddyserver.http.enable: true
-    com.caddyserver.http.upstream.port: 80
-    com.caddyserver.http.matchers.host: vaultwarden.example.com
-  environment:
-    DOMAIN: https://vaultwarden.example.com
-```
+| Label           | Description                                                                                                                                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `caddy`         | required, should match the label in the Caddyfile (eg. `caddy=api` matches upstream definition of `dynamic docker "api"`)                                                                               |
+| `caddy.network` | optional but suggested if your container is attached to multiple networks, specify the docker network which caddy connecting through (if it is empty, the first network of container will be specified) |
+| `caddy.port`    | optional unless the plugin cant auto detect the port                                                                                                                                                    |
 
 ## Docker Client
 
